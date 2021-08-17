@@ -202,7 +202,7 @@ NYPD[Datatypelist$`skimr::skim(NYPD)[[1]]`=="numeric"][is.na(NYPD[Datatypelist$`
 
 
 ```{r warning=FALSE, error=FALSE}
-nypd_df <- read.csv("NYPD_Shooting_Incident_Data__Historic_.csv")
+nypd_df <- read.csv("Data\\NYPD_Shooting_Incident_Data__Historic_.csv")
 char_vector <- c("OCCUR_DATE","BORO","LOCATION_DESC","PERP_AGE_GROUP","PERP_SEX","PERP_RACE","VIC_AGE_GROUP","VIC_SEX","VIC_RACE","Lon_Lat")
 nypd_df[char_vector][is.na(nypd_df[char_vector])] <- "UNKNOWN"
 
