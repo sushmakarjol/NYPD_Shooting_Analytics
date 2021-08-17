@@ -916,3 +916,231 @@ cat("ROC area under the curve for test is = ", auc, "\n")
 ```{=html}
 <br><hr><br>
 ```
+
+## 3. Recognize the pattern/relationship between the victim's age and the Location, specifically Bar/Night Club, to recognize the trend throughout the years and increase the patrolling.  *Major contribution by Aswin Kumar Rajendran*
+
+#### Lastly, we will use the Generalized Linear regression and Linear regression model after finding out the relationship between the victim's age and the location. We have selected a couple of prime locations. Using these locations, we will create a model and recognize the trend throughout the years and increase the patrolling for those locations. We will create a model to predict which Location will need high patrolling and the driving factors for getting these results. 
+
+
+#### Preparing the data to be used here. 
+
+```{r}
+df <- subset(NYPD, LOCATION_DESC!="")
+```
+
+#### Seeing below, we see the unique values in each column. This is important to understand and then work on it.
+
+```{r}
+unique(df$LOCATION_DESC)
+
+unique(df$VIC_AGE_GROUP)
+```
+
+#### We had to clean the data, to avoid getting the incorrect details. As you saw above, the `Age Group` had *Unknown* values. We remove those rows and work with known Age groups.
+
+```{r}
+df <- subset(df, VIC_AGE_GROUP!="UNKNOWN") 
+#everything from the df variable excluding the victim age group unknown is stored in the variable df.
+
+
+
+TAB <- table(df$LOCATION_DESC,df$VIC_AGE_GROUP) # age group and location are stored in TAB
+```
+
+
+#### We use a barplot to see the frequency of the victims. We see in all the age groups for all the locations. We see in the below figure that specific Age groups have a higher count in a particular location. We look into this more and use these findings for our further analysis.
+
+
+```{r fig.align='center'}
+
+
+barplot(TAB, beside = T, legend = F, main = paste("Bar Plot | Age Group Vs Locations ",GetFigureCount())) # bar plot shows the frequency of the the victims in all age groups in all the locations.
+
+```
+
+#### Before we dive in more, we must first confirm a significant relationship between the two features. Knowing this will ensure that we are not working with features that do not have sufficient dependency among them.
+
+#### To determine the dependency, we use the Chi-Square Test of Independence
+
+## Step 1: State the hypothesis:
+
+$H_0$: Location and Age group of the victim are independent.
+$H_a$: Location and Age group of the victim are dependent.
+
+
+#### We have decided to go with alpha = 0.05 as the best value to determine the relationship.
+
+```{r}
+alpha = 0.05
+
+```
+
+
+## Step 2 and 3: Use the Chi-square test.
+
+```{r warning=FALSE}
+#Step 2: Use the Chi-square test.
+CHI = chisq.test(TAB, correct = T)
+CHI
+
+cat(ifelse(CHI$p.value < alpha, "**Reject the null Hypothesis**", "**Fail to reject the null hypothesis**" ))
+
+```
+
+
+## Step 4: Make the decision.
+#### From the test, we know that the p-value is `r CHI$p.value`, which is less than `r alpha` . Since the p-value is less than 0.05, we would reject the null hypothesis.
+
+## Step 5: Summarize the results
+
+#### Since the p-value is less than 0.05. We will reject the null hypothesis. This gives us enough evidence to conclude that the location and age group of the victim are dependent.
+
+```{r}
+# attributes(CHI)
+# 
+# CHI$expected
+
+#library(nhstplot) ## Used to plot Chi-Square
+#Tittext = parse(expression(chi^2 ~ "Test"))
+#Making a chi-squared plot with Chi-squared of 8 and df of 4
+plotchisqtest(chisq = 597.16, df = 1, title = paste(GetFigureCount()," Chi Square Test"), signifdigitschisq=0.05)
+
+
+```
+
+#### We are good to proceed with our analysis and prediction modeling.
+
+```{r}
+#For location Bar/Night Club
+
+
+new_df <- as.data.frame.matrix(TAB)
+
+new_df [3,] %>% t() %>%
+kbl(caption = "location Bar/Night Club with Age Group",
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+
+
+```
+
+
+#### From the above table, we see that in Bar/Night Club, 25-44 is the age group with the highest number of victims with 305, and the 18-24 age group is the second-highest number of victims with 208. Furthermore, the 65+ age group has no victims in this location.
+
+#### This shows that there are a total of 546 victims in all five age groups for Bar/ Night Club.
+
+```{r}
+
+# This shows that there are a total of 546 victims in all five age groups for Bar/ Night Club. 
+cat("The total number of insidents at the bar were ", sum(new_df[3,]))
+
+```
+
+
+#### Displays the maximum number of the victim in an age group among all locations. Since we already know, 305 belongs to the 25-44 age group in Bar/ Night Club. Now we can say that bar/night club has the maximum victim in an age group.
+
+
+```{r}
+#Max incidents in all the age groups
+cat("The maximum number of insidnets that took place by any age group were",max(new_df[3,]))
+
+```
+
+<h3> `r paste(GetFigureCount()," The Scatter plot for Age group and count of shooting")` </h3>
+```{r}
+
+
+
+#scatterplot matrix is used to display how many victims are there in each age group
+pairs(new_df, pch=21, #pch symbol
+      bg = rainbow(3),  # Background color of the symbol (pch 21 to 25)
+      col = rainbow(3)) #Border color of the symbol
+```
+
+#### From the above scatterplot, we can easily see the red dot. It shows the count of shooing by age groups at the bar.
+
+
+```{r}
+
+#Filter for Bar/Night Club
+df1 <- subset(df, LOCATION_DESC == "BAR/NIGHT CLUB")
+df1$OCCUR_DATE <- as.character(df1$OCCUR_DATE)
+df1$OCCUR_DATE <- substr(df1$OCCUR_DATE, nchar(df1$OCCUR_DATE)-3, nchar(df1$OCCUR_DATE) )
+df1$OCCUR_DATE <- as.numeric(df1$OCCUR_DATE) #converted the dates and months to display in the format YYYY
+
+
+#summary(df1[]) # displays the summary of the data only with bar/night club, and it has 549 records
+
+
+```
+
+#### Now, we have made the data ready for modeling. We will first use the generalized linear model as discussed earlier for creating a model and fit it.
+
+```{r}
+mdl <- glm(df1$OCCUR_DATE ~ df1$VIC_AGE_GROUP ,data = df1)
+mdl
+summary(mdl) 
+#hist(mdl$residuals, breaks = 100)
+#which = 1:2)
+```
+
+
+#### We can see that there is very high significance in the variables. To determine the efficiency of the model, we used the Fisher Scoring and AIC value. We see that Fisher Scoring is two, and the AIC value is 2952. This is not a good score as our model is not performing as we expected.
+
+
+##### From the p-value of the glm model, we can tell that the age group between 45-64 has a high chance of involving in an incident occurring. The age group, 25-44, is the second-highest age group involved in the incident. Furthermore, the age group between 18-24 is the third-highest age group involved in an incident and could be a victim.
+
+
+
+<h3> `r paste(GetFigureCount()," Plot the Residuals with Predicted Values (fitted) ")` </h3>
+
+```{r}
+plot(mdl, which = 1:1)
+```
+
+#### Now, we proceed with our next model. We will fit this model using the traditional linear regression algorithm for a model.
+
+```{r}
+lmmdl <- lm(df1$OCCUR_DATE ~ df1$VIC_AGE_GROUP ,data = df1)
+lmmdl
+summary(lmmdl)
+```
+
+#### We can see that there is very high significance in the variables. To determine the efficiency of the model, we used the Adjusted R-square. We see that the Adjusted R-square is 0.0465. This is not a good score as our model is not performing as we expected.
+
+#### The occurrence date is the dependent response variable, and age is the independent variable. Linear Regression is done between occurrence data and victim age group.
+
+
+
+<h3> `r paste(GetFigureCount()," Plot the Residuals with Predicted Values (fitted) ")` </h3>
+
+```{r}
+
+plot(lmmdl, which = 1:1)
+
+```
+
+
+#### From the above plot, we see that the residuals are not evenly spread across the line. We can assume this is model will overfit the results. 
+
+#### From the p-value, we can tell that the age group between 45-64 has a high chance of an incident occurring. The age group, 25-44, is the second-highest age group # involved in the incident.
+
+#### However, we move ahead and compare the performance of the models we just created. We will use ANOVA to compare the model's efficiency.
+
+
+```{r}
+anova <- aov(df1$OCCUR_DATE~df1$VIC_AGE_GROUP ,data = df1)
+anova
+summary(anova)
+```
+
+
+
+##### From the p-value of ANOVA, we can say that there is a significant relationship between the occurrence date and victim age group.
+
+##### From the above test results, we can say that there are more victims involved in this location irrespective of race, and I would suggest NYPD increase the patrolling to reduce crime.
+
+
+
