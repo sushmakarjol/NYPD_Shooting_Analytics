@@ -9,7 +9,54 @@ output:
     highlight: github
     math: mathjax
     number_sections: FALSE
-    css: "style.css"
+    css: "images//style.css"
 
 
 ---
+
+```{=html}
+<p style="font-size:15px;text-align:left;"><i>Source: https://images.app.goo.gl/YStTSgPUfhG5JeYn7</i></p>
+<center>
+College of Professional Studies, Northeastern University<br>
+ALY6015 80625 Intermediate Analytics SEC 04 <br>
+Spring 2021 CPS [BOS-A-HY]<br>
+<strong>Team Members: </strong>
+Aswin Kumar Rajendran, 
+Chaya Kotturesh 
+and Neil Mascarenhas
+<br><br><br><br><br>
+</center>
+
+```
+
+```{r warning=FALSE, error=FALSE, message=FALSE, eval=TRUE, echo=FALSE, cache=TRUE, eval=TRUE}
+
+'%ni%' <- Negate('%in%')
+
+### We are creating this function to generate unique figure Ids in continuous order to comply with APA guidelines and use them while we are referring to them.  
+
+Figure_Count <<- 0   ### Sets the count to initial 0  << means that the variable is global
+GetFigureCount <- function()  ### Creating the function and it will be used when we need to add a figure id. 
+{Figure_Count <<- Figure_Count + 1  ## Increments the count so that we get new id every single tile
+return(paste("Figure :",Figure_Count))}### Returns back the values, later to be used in the assignment.
+
+
+installAllPackages <- function(Pkgs){
+    new.Pkgs <- Pkgs[!(Pkgs %in% installed.packages()[, "Package"])]
+    if (length(new.Pkgs)) 
+        install.packages(new.Pkgs, dependencies = TRUE)
+    null<- sapply(Pkgs, require, character.only = TRUE)
+    
+}
+
+
+options(scipen=5)   #  A penalty to be applied when deciding to print numeric values in fixed or exponential notation.
+options(digits = 3)   # Globally sets 3 places after decimal point
+options(knitr.kable.NA = '')
+knitr::opts_chunk$set(tidy=TRUE)  ## Reformat the R code
+knitr::opts_chunk$set(tidy.opts = list(blank = FALSE, width.cutoff = 100))  ## Removed blank lines and try to cut the code lines at set(100) characters.
+knitr::opts_chunk$set(cache=TRUE)   ## Make execution faster. When evaluating code chunks for the second time, the cached chunks are skipped (unless they have been modified).
+knitr::opts_chunk$set(comment = ' ')  ## remove the default ## from the output prefix.
+knitr::opts_chunk$set(fig.align = "Center") ## All figures center align.
+
+```

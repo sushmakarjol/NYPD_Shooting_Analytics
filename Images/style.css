@@ -1,0 +1,75 @@
+p.caption {color: #ffcfcf;
+  margin-top: 10px;}
+code {
+  white-space: inherit;
+  font-family: monospace;
+  font-style: italic;
+  background-color: #ffcfcf;
+  padding: 0 3px;
+  border: solid 1px #dbe7f3;}
+pre {
+  word-break: normal;
+  word-wrap: normal;}
+pre code {
+  white-space: inherit;
+  font-family: monospace;
+  font-style: normal;}
+#main-content h2 h4 h3 {
+    margin-bottom: 8px;
+    font-size: 1em;
+    font-weight: 350;
+    color: #474747;}
+#main-content h1:before, #main-content h2:before, #main-content h3:before, #main-content h4:before, #main-content h5:before,#main-content h6:before, #main-content h7:before {
+    color: #ffffff;    font-weight: 300;}
+header {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    text-align: center;
+    /* background-position: center; */
+    text-align: center;
+    /*background-image: url(bg.jpg);*/
+    background-image: url("../Images/NYPD.jpg");
+    background-size: inherit;
+    height: 500px;}
+body {
+    padding: 0;
+    margin: 0;
+    font-family: "Open Sans",Helvetica,Arial,sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212121;
+    background-color: #fafafa;
+    text-align: justify;}
+table th {
+    font-weight: 700;
+    background-color: #e16363;
+    color: #fff;}
+table td, table th {
+    text-align: center;}
+.pagedtable-header-type {
+    color: #fff; 
+    font-weight: 400;}
+hr {
+	height:3px;
+	border-width:0;
+	background-color: #cf2e44; 
+	margin: 0%; 
+	padding: 0%;
+	border: 0px}
+	p#MainPoint{
+        text-align: center;
+	color: #cf2e44;
+	font-size: 50px; 
+	font-weight: 500; 
+	margin: 0%; 
+	padding: 0%;
+	border: 0px;}
+p#SubPoint{
+	text-align: center;
+	color: #cf2e44;
+	font-size: 30px; 
+	font-weight: 300; 
+	margin: 0%; 
+	padding: 0%;
+	border: 0px;}
