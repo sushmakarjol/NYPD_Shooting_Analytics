@@ -1,0 +1,15 @@
+---
+title: "Team 2: The Third Watch <br> <br> NYPD Shootout Analysis Report <br><br>" 
+author: "<font size =6, color='white'>Dr Vladimir Shapiro</font>"
+date: "<font size =6, color='white'>May 21, 2021</font>"
+
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    math: mathjax
+    number_sections: FALSE
+    css: "style.css"
+
+
+---
