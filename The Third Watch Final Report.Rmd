@@ -164,3 +164,354 @@ knitr::kable(Datatypelist, "pipe", col.names = "Data Type")
 
 
 
+```{r}
+#char_vector <- c("OCCUR_DATE","BORO","LOCATION_DESC","PERP_AGE_GROUP","PERP_SEX","PERP_RACE","VIC_AGE_GROUP","VIC_SEX","VIC_RACE","Lon_Lat")
+
+# Putting unknown for missing string values
+NYPD[Datatypelist$`skimr::skim(NYPD)[[1]]`=="character"][is.na(NYPD[Datatypelist$`skimr::skim(NYPD)[[1]]`=="character"])] <- "UNKNOWN"
+
+
+# Putting 0 for missing numeric values
+NYPD[Datatypelist$`skimr::skim(NYPD)[[1]]`=="numeric"][is.na(NYPD[Datatypelist$`skimr::skim(NYPD)[[1]]`=="numeric"])] <- 0
+```
+
+
+#### We have taken care of missing values. Lets us begin with our analysis and understand the dataset. Here we go through each variable/feature column and get meaningful insights from them. As we proceed, we will keep updating our dataset so that by the end, we get a complete dataset with variables and values we need for our further analysis.
+
+
+#### We can see above that the frequency of the Boro is plotted. For this dataset, we have five Boros. Among them, Brooklyn has the highest records, while Staten Island has the lowest record of shootouts. Can we say that Brooklyn is more dangerous than the rest of Boros? Let us find it out further in our report.
+
+
+
+
+
+```{=html}
+<hr><p id="MainPoint"> Methodology </p><hr>
+```
+
+
+
+### Here, we proceed with identifying the methods we will be using, along with justification for those methods.
+
+# Business Questions
+
+## 1.	Is there a relationship between the Race of the victim and the Perpetrator who died in the shooting incident? *Major contribution by Chaya Kotturesh*
+
+#### Here, we will use the Generalized regression model to solve this question. We know that Black people have a higher count of shootings when compared with others. Here are predictable variable is the Perpetrator's race, and the independent variable will be Victim race. We will create a model for those who are dead in the shootings.
+
+
+
+```{r warning=FALSE, error=FALSE}
+nypd_df <- read.csv("NYPD_Shooting_Incident_Data__Historic_.csv")
+char_vector <- c("OCCUR_DATE","BORO","LOCATION_DESC","PERP_AGE_GROUP","PERP_SEX","PERP_RACE","VIC_AGE_GROUP","VIC_SEX","VIC_RACE","Lon_Lat")
+nypd_df[char_vector][is.na(nypd_df[char_vector])] <- "UNKNOWN"
+
+
+```
+
+
+#### Reading the NYPD data set and performed the cleaning of character columns by filling UNKNOWN for NA's
+
+
+```{r}
+death_data<- nypd_df %>% filter(nypd_df$STATISTICAL_MURDER_FLAG== TRUE)
+
+tab1(death_data$VIC_RACE, cex.main=1, cex.name=0.8, cex.axis=0.8, cex.lab=0.8, sort.group ="decreasing", bar.values ="percent", main = paste(GetFigureCount()," | Percentage of victim's died"), xlab=" % of shoot outs", ylab="Race of Victims", horiz = T)
+
+```
+
+
+#### As the business question is to find the relationship between the race of people that lead to the victim's death, I filtered the data set based on the victim's death. As we can see, there are around 4,127 records of shootings that lead to the victim's deaths. In that, the highest number of victims who died were of Black Race with whopping 70%, followed by White Hispanics with 15.9% 
+
+
+
+```{r}
+death_data$PERP_RACE <- sub("^$", "UNKNOWN", death_data$PERP_RACE)#replacing empty cells with UNKNOWN
+death_data$VIC_RACE <- sub("^$", "UNKNOWN", death_data$VIC_RACE)#replacing empty cells with UNKNOWN
+
+crosstable2<- table(death_data$PERP_RACE,death_data$VIC_RACE)
+crosstable2 <- round(prop.table(crosstable2)*100, 2)
+crosstable2<-kable(crosstable2, caption = paste(GetFigureCount(), " | Percentage of Perpetrator's race killing victim's race"), xlab="test") %>% 
+    kableExtra::kable_styling(., position = "float_left")
+crosstable2
+
+```
+
+
+
+#### Intending to find the relationship between Perpetrator and victim's race, we created the contingency table.
+
+#### We first convert the data as a table.
+
+
+```{r fig.height = 7, fig.width = 18.5}
+#library("gplots")
+# 1. convert the data as a table
+test<- table(death_data$PERP_RACE,
+             death_data$VIC_RACE)
+dt <- as.table(as.matrix(test))
+```
+
+#### Now, we use the converted data to visualize the Perpetrator's race killing the victim's race.
+
+```{r fig.height = 7, fig.width = 18.5}
+# 2. Graph
+balloonplot(t(dt), 
+            main =paste(GetFigureCount(), " | Perpetrator's race killing victim's race"), 
+            xlab ="Victim's death", 
+            ylab="Perpetrator's Race",
+            label = FALSE, 
+            show.margins = FALSE, 
+            cex.main = 0.9  )
+```
+
+
+#### From the above graph, we can observe that Black and Unknown or white-Hispanic races murdered most Blacks. Unfortunately, the following significant pattern can be found where White-Hispanic were majorly murdered by White Hispanic themselves and next highest by BLACK people.
+
+
+
+#### Even though contingency tables show some relationship between, Perpetrator and the victim's race, let us identify by Performing a Chi-square test at 0.05 significant level to identify the relationship between two categorical variables in the contingency table.
+
+
+### `df=(r−1)(c−1)` degrees of freedom and `p = 0.05` *("Chi-Square Test of Independence in R - Easy Guides - Wiki - STHDA", 2020).*
+
+#### Here,
+#### r is the number of rows in the contingency table
+#### c is the number of column in the contingency table
+
+
+```{=html}
+
+<B><FONT SIZE =3 color="#778899">
+Step a: State the hypothesis and identify the claim</font></B>
+<br> 
+<B>Null hypothesis</B> 
+$\it{H_{0}}$: There is no relationship exists between the race of perpetrator and victim.
+<br>
+<B>Alternative hypothesis</B> 
+$\it{H_{1}}$: There is relationship between the race of perpetrator and victim.
+ 
+<B><FONT SIZE =3 color="#778899">
+Step b: Find the critical value</FONT>
+</B>
+
+```
+
+
+```{r}
+#here rows=6 columns=6 so df= 5*5
+
+Critical_Val = qchisq(.05, df=25)
+
+cat("The Critical value is ",Critical_Val)
+
+
+```
+
+```{=html}
+
+<B><FONT SIZE =3 color="#778899">Step c: Performing $\chi^2$ Test or find the p-value</FONT></B>
+
+
+```
+
+
+```{r}
+output_task4 <-chisq.test(dt)
+output_task4
+cat("Our Decision mustbe :", ifelse(output_task4$p.value < 0.05, "\nReject the null Hypothesis", "\nFail to reject the null hypothesis" ))
+
+```
+
+```{=html}
+
+<B><FONT SIZE =3 color="#778899">Step d: Make the decision</FONT></B>
+<BR>The decision rule is that if $p$-value is lesser than $\alpha$ we must reject the null hypothesis.
+$p$-value < $\alpha$ i.e. 0.00000000000000022 is lesser than  0.05 ,so we must reject the $\it{H_{0}}$
+
+<B><FONT SIZE =3 color="#778899">Step e: Summary</FONT></B>
+<BR>
+```
+
+#### Interpretation: The evidence leads us to reject the null hypothesis. Therefore, there is a relationship between the race of Perpetrator and victim.
+
+#### Another approach to figure out the relationship between categorical variables in R is by using Cramer's V coefficient
+
+
+
+```{r fig.height = 15, fig.width = 18.5}
+##library(vcd)
+
+assocstats(table(death_data$PERP_RACE, death_data$VIC_RACE))
+
+```
+### interpretation of this function:
+##### 1. Cramer’s V varies from 0 to 1,  a value of 1 indicates perfect association.In this scenario Cramer's V co-efficient is 0.334 which shows a moderate effect due to association.A value between `0.30 – < 0.50` is considered to be moderate. 
+
+
+#### 2. Contingency coefficient values also vary between 0 to 1. The larger the contingency coefficient, the stronger the association. 0.5 again shows the moderate association between Perpetrator and victim's race. 
+
+
+#### The discipline, the relevant data, and the analyst's goals all influence how measures of association are interpreted. There are sometimes guidelines for “small,” “medium,” and “large” impact. A smaller effect size may be considered “large,” but in physical science, such as chemistry, it may be considered very small in psychology or behavioral science. The unique circumstances of the study are necessary as well.
+
+
+```{=html}
+<br><hr><br>
+```
+
+
+## 2.	Is there any noticeable relationship between the victim's Sex to the Perpetrator's Race and age with a motive to recognize the Perpetrator's race pattern? *Major contribution by Neil Mascarenhas*
+
+#### The NYPD is facing difficulties in identifying the reason behind the shooting. They are interested in seeing the relation between the Perpetrator's Race with Victim's sex and Age Group.
+
+
+#### Here, we will use several modeling techniques to determine the pattern. First, we need to know the relationship between the Perpetrator's Race to the victim's Sex. We will create the model for these variables and understand what the variable that determines the relationship is. Moreover, which are the variables that have the highest relationship. Knowing this will help us predict and recognize the Perpetrator's Race. 
+
+
+```{r}
+BQ2 <- select(NYPD, c(PERP_RACE, VIC_SEX, VIC_AGE_GROUP)) %>% na.omit() %>% filter(PERP_RACE != "UNKNOWN", VIC_SEX != "U", VIC_AGE_GROUP != "UNKNOWN", PERP_RACE != "AMERICAN INDIAN/ALASKAN NATIVE")
+
+set.seed(11521)
+BQ2 <- BQ2[sample(nrow(BQ2)), ] ### Shuffles
+
+
+```
+
+
+```{r}
+
+All_males<-BQ2 %>% filter(VIC_SEX=="M" ) %>% head(table(BQ2$VIC_SEX)[1])
+All_females<-BQ2 %>% filter(VIC_SEX=="F") %>% head(table(BQ2$VIC_SEX)[1])
+
+males_females <-  rbind(All_males, All_females)
+
+set.seed(11521)
+BQ2 <- males_females[sample(nrow(males_females)), ] ### Shuffles
+
+
+#describe(BQ2)
+
+cat("Any missing or NA values? \n(0 = No)\nResult = ",sum(!complete.cases(BQ2)))
+
+
+##
+
+```
+
+
+#### Even though the tables show some sort of relationship between the variables, let us identify by Performing the Chi-square test of Independence at 0.05 significant level to identify the relationship between three categorical variables in the table above.
+
+```{r warning=FALSE}
+alpha = 0.05
+
+LoSig   = 1-alpha
+DegFre  = (nrow(BQ2) -1)*(ncol(BQ2) -1 )
+
+
+```
+
+
+### Step 1: State the hypotheses and identify the claims
+
+## Claim 1
+
+* Null hypothesis $H_0:$ The Victim Sex is independent of Perpetrator Race
+
+* Alternative hypothesis $H_1:$ The Victim Sex is dependent upon Perpetrator Race
+
+## Claim 2
+
+* Null hypothesis $H_0:$ The Victim Age Group is independent of Perpetrator Race
+
+* Alternative hypothesis $H_1:$ The Victim Age Group is dependent upon Perpetrator Race
+
+
+### Step 2: Find the critical value.
+
+```{r}
+
+Critical_Val <-qchisq(p=LoSig, DegFre)
+
+cat("The Critical value for both claims is ", Critical_Val)
+
+```
+
+
+### Step 3: Compute the test value.
+
+
+
+```{r warning=FALSE}
+
+
+Table_PR_VS <- table(BQ2$VIC_SEX,BQ2$PERP_RACE) # Vic Sex and Prep Race are stored in TAB
+Table_PR_VA <- table(BQ2$PERP_RACE,BQ2$VIC_AGE_GROUP) # Vic Age Group and Vic Sex are stored in TAB
+
+
+ChT_PR_VS <- chisq.test(Table_PR_VS, correct = T)
+ChT_PR_VA <-chisq.test(Table_PR_VA, correct = T)
+
+# ChT_PR_VS$p.value
+# ChT_PR_VG$p.value
+
+
+```
+
+### Step 4: Make the decision.
+
+```{r}
+
+
+cat(("Determine Dependancy between and Victim Sex "),
+ifelse(ChT_PR_VS$statistic < Critical_Val, 
+      "Exists", 
+       "Does Not Exist" ), " and the Test Score is ", ChT_PR_VS$statistic )
+
+cat("\n \n \n")
+
+
+cat(("Determine Dependancy between Perpetrator Race and Victim Age Group "),
+ifelse(ChT_PR_VA$statistic < Critical_Val, 
+       "Exists", 
+       "Does Not Exist" ), " and the Test Score is ", ChT_PR_VA$statistic)
+
+
+
+
+```
+
+
+
+#### From the above tests, we computed the Chi-Square statistic and the critical value. We see that the Chi-Square statistic is **Greater** than the Critical value. Therefore we have enough evidence to **Reject** the null hypothesis H0 for **0.05** degree of freedom.
+
+#### Now that we have made the decision, let us cross-verify using the p-value
+
+
+```{r}
+
+
+cat(("Determine Dependancy between and Victim Sex "),
+ifelse(ChT_PR_VS$p.value < alpha, 
+      "Exists", 
+       "Does Not Exist" ), " and the P Value is ", ChT_PR_VS$statistic )
+
+cat("\n \n \n")
+
+
+cat(("Determine Dependancy between Perpetrator Race and Victim Age Group "),
+ifelse(ChT_PR_VA$p.value < alpha, 
+       "Exists", 
+       "Does Not Exist" ), " and the P Value is ", ChT_PR_VA$p.value)
+
+
+
+```
+
+#### We can see that the p-value is significantly less than the decided alpha. Therefore we have made the right decision to reject the null hypothesis.
+
+
+### Step 5: Summarize the results.
+
+#### As we have enough evidence to reject the null hypothesis H0 for both the claims, Which states The Victim Sex is dependent upon Perpetrator Race and Victim Age Group
+
+
