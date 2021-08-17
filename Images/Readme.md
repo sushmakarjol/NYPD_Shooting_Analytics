@@ -1,0 +1,1 @@
+## Static Images and graphics used in this Project.
