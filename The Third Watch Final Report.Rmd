@@ -515,3 +515,404 @@ ifelse(ChT_PR_VA$p.value < alpha,
 #### As we have enough evidence to reject the null hypothesis H0 for both the claims, Which states The Victim Sex is dependent upon Perpetrator Race and Victim Age Group
 
 
+
+#### Now, we proceed with preparing the data for modeling. Here we split the data between the test and train dataset.
+
+```{r}
+
+set.seed(11521)
+trainIndex <- createDataPartition(BQ2$VIC_SEX, p = 0.7, list = FALSE, times = 1)
+
+
+
+BQ2_train <- BQ2[ trainIndex,]
+BQ2_test <- BQ2[-trainIndex,]
+
+
+table(NYPD$VIC_SEX)  %>% t()%>%
+  kbl(caption = paste(GetFigureCount()," | Male and Female count in Entire dataset"),
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+
+
+table(BQ2_train$VIC_SEX)  %>% t()  %>%
+  kbl(caption = "Male and Female count in Train dataset",
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+
+table(BQ2_test$VIC_SEX)%>% t()  %>%
+  kbl(caption = "Male and Female count in Test dataset",
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+
+```
+
+
+
+
+#### We have successfully split the dataset into two different and unique sets. We have 70% of the dataset for train and 30% of the dataset for the test. Let us have a glimpse of those two sets.
+
+```{r}
+
+
+headTail(BQ2_train,top = 5, bottom = 0) %>%
+  kbl(caption = paste(GetFigureCount()," | NYPD Train set : 70%"),
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+
+
+headTail(BQ2_test,top = 5, bottom = 0)%>%
+  kbl(caption = paste(GetFigureCount()," |NYPD Test set : 30%"),
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+
+
+
+```
+
+<br><br>
+
+<hr style="height:3px;border-width:0;background-color:#cf2e44;margin: 0%; padding: 0%;border: 0px;">
+
+<br><br>
+
+
+# **Fitting the Models.**
+
+#### As mentioned earlier, we will fit several models. Below are the models our team came up with and agreed upon.
+
+### 1) Support Vector Machine 
+### 2) Decision Trees 
+### 3) Logistic regression 
+### 4) Generalized Linear Model 
+### 5) Random Forest 
+### 6) Generalized Boosted Regression Modelling
+
+#### Let us now fit them and compare their performance later.
+
+```{r warning=FALSE, perform-AllMods, cache=TRUE}
+###  VIC_SEX ~ VIC_AGE_GROUP * PERP_RACE 
+
+
+# prepare training scheme
+control <- trainControl(method="repeatedcv", number=5, repeats=2, sampling = "up", allowParallel=TRUE)
+
+# train the SVM model
+set.seed(15)
+modelSVM <- train(VIC_SEX~., data=BQ2_train, method="svmRadial", trControl=control)
+
+# train the GLM model
+set.seed(15)
+modelGLM <- train(VIC_SEX~., data=BQ2_train, method="glm", trControl=control,  family = "binomial",na.action = "na.exclude")
+
+# train the RF model
+set.seed(15)
+modelRF <- train(VIC_SEX~., data=BQ2_train, method="rf", trControl=control)
+
+# train the Log Reg model
+set.seed(15)
+modelLOGR <- train(VIC_SEX~., data=BQ2_train, method="multinom", trControl=control, verbose=FALSE, trace=FALSE)
+
+# train the gbm model
+set.seed(15)
+modelGBM <- train(VIC_SEX~., data=BQ2_train, method="gbm", trControl=control, verbose=FALSE)
+
+# train the Decison trees model
+set.seed(15)
+modelDTREE <- train(VIC_SEX~., data=BQ2_train, method="rpart", trControl=control)
+```
+
+#### We have generated several models. Let us now cumulate the results and compare the efficiency.
+
+
+```{r Disp-AllMods, warning=FALSE, cache=TRUE}
+# collect resamples
+results <- resamples(list(SVM=modelSVM, 
+                          RF=modelRF, 
+                          GLM=modelGLM,
+                          MULTM=modelLOGR, 
+                          GBM=modelGBM, 
+                          DTREE=modelDTREE))
+
+summary(results)
+```
+
+#### The above results show us the summary of the model's performance. It has the Accuracy and Kappa metrics. We will use both to determine which one did best.
+
+#### We can see that Random forest `RF`, Generalised Linear model `GLM` and logistic regression model `MULTM` did best with the accuracy of **63.2%** by seeing the maximum accuracy. 
+
+#### It is difficult to compare as the accuracy is the same for all three. 
+
+#### Therefore, we try to visualize it, hoping it might help to compare the results.
+
+```{r warning=FALSE}
+# boxplots of results
+bwplot(results, main=paste(GetFigureCount()," | Kappa and Accuracy Matrics"))
+
+
+```
+
+
+#### From the above figure, we can see that the kappa max value was highest among all the other models for Random forest. We also see that for GLM and Logistic Regression model, the max score was not in the third quartile. This shows that they performed well a few times compared to random forest.
+
+### We choose to go ahead with Random Forest as our desired model for further analysis.
+
+
+#### Before we fit the model, we needed to find out which parameters were best and use them in our final models
+
+#### We decided to go with cross-validation and perform the grid algorithm to determine the features.
+
+
+
+```{r perform-CV-Grid, cache=TRUE}
+
+# Define the control
+trControl <- trainControl(method = "cv",
+    number = 10,
+    search = "grid")
+
+set.seed(1234)
+# Run the model
+rf_default <- train(VIC_SEX~.,
+    data = BQ2_train,
+    method = "rf",
+    metric = "Accuracy",
+    trControl = trControl)
+# Print the results
+print(rf_default)
+
+```
+
+
+#### After doing Grid and Cross-validation, we found out that our model accuracy got decreased. It was **63.3%** and now looking at the above result we see it it is at **58.8%**
+
+
+#### To figure out why this shift was caused. We then decided to plot the results and visually see the error rate.
+
+
+```{r perform-remodel500, warning=FALSE, cache=TRUE}
+
+num.var     <- ncol(BQ2_train)
+
+BQ2_train_rf = BQ2_train %>% mutate_if(is.character, as.factor)
+#BQ2_train_rf$VIC_SEX = as.numeric(BQ2_train$VIC_SEX)
+
+RF_Mod<-randomForest::randomForest(VIC_SEX~.,data = BQ2_train_rf,
+                     mtry = num.var - 1, # try all variables at each split, except the response variable
+                     proximity = TRUE,
+                     importance = TRUE,
+                     ntree = 500)
+
+
+plot(RF_Mod, main=paste(GetFigureCount()," | Random Forest Trees and error"),lwd=2)
+legend("bottomright",
+c("Sex"),
+fill=c("black")
+)
+```
+
+
+#### As we can see above for Victim Race, the error was very high. However, it was not high as in the initial iterations. However, as the iterations increased, the rate increased and remained constant throughout the Age group. The error rate had spiked, and then it reduced. It was then constant throughout. Lastly, we see for Victim Sex that the error was moderate and kept constant throughout. Entirely we can see that the error rate fluctuated initially but later kept constant throughout the entire 500 trees.
+
+# **Now, we create a confusion matrix and report the results of your model predictions on the train set. We will interpret and discuss the confusion matrix.**
+
+#### A confusion matrix is a handy tool for calibrating the output of a model and examining all possible outcomes of our predictions. We see the values such as true positive, true negative, false positive, false negative.
+
+#### We First need to have a prediction matrix to get the confusion matrix. Let us generate and use it.
+
+```{r}
+# c("link", "response", "terms", vector, prob, class, raw )
+#
+predicted <- predict(rf_default, BQ2_train)  # predicted scores
+
+
+
+```
+
+
+
+##### We have created the prediction matrix for the training dataset. Now we will use these results to get the confusion matrix. Which will show us how well did the model predict the values. This is to see for values that are known. Later, we will use a test dataset for values unknown to the model and see how well it does on unseen data.
+
+
+
+```{r}
+table(Pred = predicted, True =BQ2_train$VIC_SEX)%>%
+  kbl(caption = paste(GetFigureCount()," | Confussion matrix for Train"),
+      align = 'c') %>%
+        kable_classic_2(full_width = T,
+                        position = "center",
+                        fixed_thead = T)
+```
+
+
+
+
+
+```{r warning=FALSE}
+
+BQ2_train$VIC_SEX = factor(BQ2_train$VIC_SEX)
+
+levels(BQ2_train$VIC_SEX) = c("F", "M")
+
+
+caret::confusionMatrix(predicted, BQ2_train$VIC_SEX) 
+
+
+```
+#### We generated the confusion matrics. As we can see above, To understand the confusion matrix and interpret it, we need to base it on assumptions. 
+
+#### We see that our prediction model did not work very well. We see that there is a false positive present. 
+
+
+#### From our analysis, we can say that **False Positives** are higher and are more damaging for the analysis. We feel this is not good. The type of error depends on which use case we need to have. What are we trying to predict, and what values we expect to get.
+
+
+# **Reporting and interpreting metrics for Accuracy, Recall-Precision, and Specificity.**
+
+```{r}
+
+pred <- prediction(as.numeric(as.character(factor(predicted, labels = c(0,1)))), as.numeric(as.character(factor(BQ2_train$VIC_SEX, labels = c(0,1)))))
+
+```
+
+#### We have clreated the prediction matrics let us use it to dettermine the performances.
+
+
+```{r}
+## ROC curve
+ROC.perf_tf <- performance(pred, "tpr", "fpr")
+
+
+## Recall-Precision curve             
+RP.perf_pr <- performance(pred, "prec", "rec")
+
+
+## Cutoff 
+RP.F_measure <- performance(pred, "f", x.measure="cutoff")
+
+```
+
+
+```{r}
+
+#plot the curves
+par(mfrow=c(1,3))
+plot (RP.F_measure,main= paste(GetFigureCount()," Cut off"))
+plot (RP.perf_pr, main=paste(GetFigureCount(),"\nPrecission and Recall"))
+plot (ROC.perf_tf, main=paste(GetFigureCount(),"\nTrue and False Rate (Possitive)"))
+
+## 
+
+```
+
+```{r warning=FALSE}
+
+# Specificity and Sensitivity
+
+c_mat  = caret::confusionMatrix(predicted, BQ2_train$VIC_SEX) 
+
+# c_mat$table
+# c_mat$table[1]
+# c_mat$table[2]
+# c_mat$table[3]
+# c_mat$table[4]
+
+
+sensitivity_Train <- c_mat$table[1]/(c_mat$table[1]+c_mat$table[2])
+
+specificity_Train <- c_mat$table[4]/(c_mat$table[4]+c_mat$table[3])
+
+cat("The sensitivity is ", sensitivity_Train, " and Specificity is ", specificity_Train)
+
+```
+
+#### Sensitivity is the percentage of `1`'s (actuals) correctly predicted by the model. It is also called True Positive Rate. Here our Sensitivity of the model is  **0.376** 
+
+*Sensitivity= # Actual 1′s and Predicted as 1′s / # of Actual 1′s*
+
+
+#### Specificity is the percentage of `0`'s (actuals) correctly predicted by the model. It is also called True Negative Rate. Here our Specificity of the model is  **0.82**. Specificity can also be calculated as 1 − False Positive Rate.
+
+
+*Specificity=# Actual 0′s and Predicted as 0′s / # of Actual 0′s*
+
+<br><br>
+
+<hr style="height:3px;border-width:0;background-color:#cf2e44;margin: 0%; padding: 0%;border: 0px;">
+
+<br><br>
+
+
+
+# **Creating a confusion matrix and reporting the results of our model for the test set.**
+
+```{r warning=FALSE}
+
+# c("link", "response", "terms", vector, prob, class, raw )
+#
+predicted_Test <- predict(rf_default, BQ2_test)  # predicted scores
+
+
+BQ2_test$VIC_SEX = factor(BQ2_test$VIC_SEX)
+levels(BQ2_test$VIC_SEX) = c("F",'M')
+
+caret::confusionMatrix(BQ2_test$VIC_SEX, predicted_Test)
+
+
+```
+
+#### Here, we again generated confusion matrics. As we can see above, it is the default threshold.
+
+#### We see that our prediction model did not work well. We see that there is a false positive present.
+
+
+<br><br>
+
+<hr style="height:3px;border-width:0;background-color:#cf2e44;margin: 0%; padding: 0%;border: 0px;">
+
+<br><br>
+
+
+
+
+# **Calculating and interpret the AUC**
+
+
+```{r}
+
+## Accuracy
+
+auc.tmp <- performance(pred,"auc");
+auc <- as.numeric(auc.tmp@y.values)
+cat("ROC area under the curve for train is = ", auc, "\n")
+
+
+predicted_Test <- predict(rf_default, BQ2_test)  # predicted scores
+
+pred <- prediction(as.numeric(as.character(factor(predicted_Test, labels = c(0,1)))), as.numeric(as.character(factor(BQ2_test$VIC_SEX, labels = c(0,1)))))
+
+
+auc.tmp <- performance(pred,"auc");
+auc <- as.numeric(auc.tmp@y.values)
+cat("ROC area under the curve for test is = ", auc, "\n")
+
+
+```
+
+##### Let us dig deep and understand what the value means. We see above that the ROC area under the curve is =  **0.598**. This value is a measurement of the efficiency of the model. Receiver Operating Characteristic (ROC) curves are a popular way to visualize the tradeoffs between Sensitivity and Specificity in a binary classifier. The probabilistic interpretation is that if we randomly choose an optimistic case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC. The matrix cells enumerate all possible combinations of positive and negative cases, and the fraction under the curve comprises the cells where the positive case outranks the negative one.
+
+
+
+```{=html}
+<br><hr><br>
+```
