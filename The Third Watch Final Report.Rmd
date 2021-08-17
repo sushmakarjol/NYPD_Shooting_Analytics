@@ -60,3 +60,67 @@ knitr::opts_chunk$set(comment = ' ')  ## remove the default ## from the output p
 knitr::opts_chunk$set(fig.align = "Center") ## All figures center align.
 
 ```
+```{=html}
+<hr><p id="MainPoint"> Introduction </p><hr>
+```
+
+
+
+This paper summarizes our preliminary (Exploratory Data Analysis - EDA) analysis on the selected dataset, the NYPD shooting incident dataset for this group project. It will share some insightful results from the EDA and descriptive statistics. Further, this paper identifies a set of methods used to answer the business questions on the dataset and justifies those methods using statistics and analytics concepts. 
+
+
+
+#### First, let us create the environment by importing the required packages to analyze and create a visualization on the dataset.
+
+
+```{r warning=FALSE, error=FALSE, message=FALSE, eval=TRUE, echo=FALSE, tidy=FALSE, tidy.opts = list(blank = FALSE, width.cutoff = 100), cache=FALSE}
+packages <- c(
+    "dplyr", "psych", "plyr", "reshape2", "rlang",  "patchwork",  ## Tools to work with core language features of R and the tidyverse
+    "scales", "grid", "UsingR", "tidyr", "tidyverse", ## For Data cleaning and processing
+    "readxl", ## This package makes it possible to read Excel (.xlsx) files to r.
+    "ggplot2","ggpubr", "RColorBrewer", "gplots",
+    "rmarkdown","formatR",  ## To format R markdown and add features
+    "plotly","gmodels",   ## To plot realistic, interactive plots
+    "knitr","kableExtra", ## To display tables in beautiful format.
+    "base64","base64enc", ## To use Base 64 encryption 
+    "enc",        ## DOC: https://cran.r-project.org/web/packages/enc/enc.pdf
+    "EDA",        ## DOC: https://cran.r-project.org/web/packages/dlookr/vignettes/EDA.html
+    "hrbrthemes", ## Adds extra themes for html rendering
+    "ggcorrplot",  ## Extensively for Correlation Plots in ggplot",
+    "corrplot",    ## For visualizing correlation matrices and confidence intervals. It also contains some algorithms to do matrix reordering
+    "Publish", "magrittr", ### Used to add column names with piping
+    "PerformanceAnalytics", ### Used to Draw scatter plots on Correlation matrix
+    "forecast", ## Required for the EDA Report
+    "xfun",   ## Is used to add eternal files and read them to this Markdown. 
+    "htmltools", ## Helps to display HTML in the Markdown (and pdf when we knit)
+    "funModeling", # Used to run Status function.
+    "corrgram", # Used to Plot corplots using ggplot engine.
+    "dummies", # Used to create dummies
+    "lsmeans", ## Used to plot lm
+    "imputeTS", ## Used by na.mean() function
+    "leaps", ## Best for Subsets regsubsets()  
+    "lmSubsets", ## For all subset function
+    "sjPlot", "nhstplot", ## Used to plot Chi-Square
+    "gtsummary", ## to have better summary of data
+    "ROCR",    ## Used to check for performance 
+    "InformationValue",  ## Used by optimalCutoff function
+    "caTools", ## Used to Split data into test and train.
+    "coefplot", ## Used to plot Coefficients.
+    "mltools",  ## Calculate Root-Mean-Square Error (Deviation)
+    "caret",      ## Used to generate confusion matrix
+    "glmnet",   ## To run ridge and lasso regularization on models using cv.glmnet and glmnet function.
+    "descr", "vcd", ## To run autocrads test.
+    "mlbench", ### Machine learning baenchmarking 
+    "randomForest", ## To model randomForests and run plots
+    "epiDisplay"#,"psychTools", "moments", "Hmisc","skimr", "DataExplore", "visdat", "mapview" 
+)
+    
+installAllPackages(packages)
+# 
+# if(installAllPackages(packages)) 
+#     cat("Done, Installed and imported All the required packages and libraries for this assignment") else 
+#     cat("Some Error in installation")
+#     cat("Done")
+#     
+```
+
