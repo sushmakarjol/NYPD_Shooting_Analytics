@@ -1144,3 +1144,169 @@ summary(anova)
 
 
 
+```{=html}
+<hr><p id="MainPoint"> Conclusion </p><hr>
+```
+
+#### To conclude this report, we have completed the preliminary (Exploratory Data Analysis - EDA) analysis. Furthermore, we Identified the methods we will be using to answer the questions and justify those methods. Out interpretation of the dataset is much more precise now than before. However, it was difficult to conclude the appropriate methods as we do not know if we may need to perform extra pre procedures to get the data ready for modeling. We also needed to know how we will handle missing or unknown values in the whole dataset creating the model. Will it affect the performance of the model or not. We performed the Chi-square test and implemented it. It was used to determine that a significant relationship exists between the victim's race—furthermore, the Perpetrator who died in the shooting incident. There is a relationship between the victim's Sex to the Perpetrator's Race and Age. There is a relationship between location and age group. Next, we implemented the glm method to model the relationship and predict the results. We concluded that BAR/NIGHT CLUB has a significant relationship with the age group between 45-64 getting shot in an incident.
+
+####Lastly, we choose Random Forest as the best model after comparing several models. We implemented this model by using the Cross-validation and Grid to get the best parameters. This helped us create a model of the sex of the victim using the Perpetrator's age group and race. Model performance was better in Random forest. However, it reduced reasonably. We feel more in-depth analysis is to be done to determine why it happened and use different methods to determine if they performed similarly. Maybe the parameters affected the performances, or running it several folds did. Overall the analysis was fantastic. It gave us a glimpse of real-world problems and showed us where we lie tacking such business questions.
+
+
+
+```{=html}
+<hr><p id="MainPoint"> References </p><hr>
+```
+
+
+1) The City of New York. (2020, July 15). NYPD Shooting Incident Data (Historic) | NYC Open
+Data. NYC Open Data. https://data.cityofnewyork.us/Public-Safety/NYPD-ShootingIncident-Data-Historic-/833y-fsy8
+
+2) Winston, A., & Winston, A. (2018, January 27). Transparency Advocates Win Release of
+NYPD "Predictive Policing" Documents. The Intercept.
+https://theintercept.com/2018/01/27/nypd-predictive-policing-documents-lawsuitcrime-forecasting-brennan/
+
+3) Advanced Modeling. (n.d.). Retrieved April 29, 2021, from https://datascienceplus.com/category/advanced-modeling/O’H, V. A. P. B. B. (2012, April 23). Why Simpler Models are Better. Retrieved April 29, 2021, from https://methodsblog.com/2012/04/23/simple-models-ftw/
+
+4) Wenger, S. J. (2012, April 1). Assessing transferability of ecological models: an underappreciated aspect of statistical validation. Retrieved April 29, 2021, from https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00170.x
+
+5) What factors should I consider when choosing a predictive model technique? (2021, April 26). Retrieved April 29, 2021, from https://sebastianraschka.com/faq/docs/choosing-technique.html
+
+6) Chi-Square Test of Independence in R - Easy Guides - Wiki - STHDA. Sthda.com. (2020). Retrieved May 16, 2021, from http://www.sthda.com/english/wiki/chi-square-test-of-independence-in-r.
+
+7) Chapter 11 Categorical Predictors and Interactions | Applied Statistics with R. (2020, October 30). NA. https://daviddalpiaz.github.io/appliedstats/categorical-predictors-and-interactions.html
+
+8) Coding for Categorical Variables in Regression Models | R Learning Modules. (n.d.). NA. Retrieved May 16, 2021, from https://stats.idre.ucla.edu/r/modules/coding-for-categorical-variables-in-regression-models/
+
+9) GeeksforGeeks. (2020, October 12). Regression with Categorical Variables in R Programming. https://www.geeksforgeeks.org/regression-with-categorical-variables-in-r-programming/
+
+10) Logit Regression | R Data Analysis Examples. (n.d.). Are UCLA. Retrieved May 10, 2021, from https://stats.idre.ucla.edu/r/dae/logit-regression/
+
+11) Quick-R: Generalized Linear Models. (n.d.). Statmethods. Retrieved May 16, 2021, from https://www.statmethods.net/advstats/glm.html
+
+12) Rungta, K. (2021, April 8). R Random Forest Tutorial with Example. Rungta Blog. https://www.guru99.com/r-random-forest-tutorial.html
+
+
+
+```{=html}
+<hr><p id="MainPoint"> Appendix  </p><hr>
+```
+
+
+```{r}
+
+## in the appendix 
+
+headTail(NYPD)
+glimpse(NYPD)
+str(NYPD)
+
+### Removing unwanted variables/ columns
+### 
+
+```
+
+#### We have taken care of missing values. Lets us begin with our analysis and understand the dataset. Here we go through each variable/feature column and get meaningful insights from them. As we proceed, we will keep updating our dataset so that by the end, we get a complete dataset with variables and values we need for our further analysis.
+
+```{r}
+
+knitr::kable(freq(NYPD$BORO,na.rm = T), "pipe")
+
+```
+
+
+```{r warning=FALSE,error=FALSE}
+
+## We are interested in locations that have 100 and above shooting. We do this to avoid lengthy reports and outliers.
+
+NYPD %>%
+    select(LOCATION_DESC)%>%
+    filter(LOCATION_DESC == c("BAR/NIGHT CLUB","COMMERCIAL BLDG" ,"GROCERY/BODEGA", "MULTI DWELL - APT BUILD","MULTI DWELL - PUBLIC HOUS","PVT HOUSE","RESTAURANT/DINER"))%>%
+    freq(na.rm = T) %>% knitr::kable(., "pipe")
+```
+
+
+#### Now, we plot the location and see how the crime rate is spread across different locations. Here we are interested in seeing those locations which have shootings higher than 100. We see that a shocking figure of 45% of shooting was done at **MULTI DWELL - PUBLIC HOUS** We see that it correlates to 553 shooting in total. Later in the report, we will see the location details on Race and age group.
+
+```{r}
+
+knitr::kable(freq(as.character(NYPD$STATISTICAL_MURDER_FLAG)), "pipe")
+```
+
+#### Moving ahead, we try to visualize the deaths in the event of a shootout. We see fortunate there has not been a large number of deaths in this event. We see that in the event of a shootout, only about 19% of the time, there was a victim's death. In the further report, we will see race separation and understand the pattern with it.
+
+
+```{r }
+### In our analysis, we found that there were garbage values in the age group. We remove them and do our analysis.
+
+
+NYPD <-subset(NYPD, NYPD$PERP_AGE_GROUP %ni% c("940","1020","224"))   # Apply subset function
+```
+
+
+```{r fig.show="hold", out.width="50%"}
+ 
+# freq(NYPD$PERP_AGE_GROUP,na.rm = T,plot=T)
+# freq(NYPD$VIC_AGE_GROUP,na.rm = T,plot=T)
+
+
+knitr::kable(freq(NYPD$PERP_AGE_GROUP,na.rm = T,plot=F), "pipe")
+knitr::kable(freq(NYPD$VIC_AGE_GROUP,na.rm = T,plot=F), "pipe")
+
+
+
+
+```
+
+#### Once we clean the variable and get only the cleaned data, we see that a stunning figure of 42.67% of shoutouts was done by people in the age group of 24-44, whereas the least number of shootouts were carried out by age group 65 and above. We also see that there are anonymous data as well. We see somewhat a pattern here. The younger generation is more indulged, and the older generation is less when compared.
+
+
+```{r fig.show="hold", out.width="50%"}
+
+knitr::kable(freq(NYPD$PERP_RACE,na.rm = T), "pipe")
+knitr::kable(freq(NYPD$VIC_RACE,na.rm = T), "pipe")
+
+```
+
+#### Now we see the shooting records as per the Race. We are not shocked to see that Black Race dominates this proportion. We also see that American Indian and Alaskan Native does the least number of shootouts. We can see that there is a surge in shooting by back Race as the second-highest Race to have indulged in shootouts is White Hispanic. However, the slope is very steep. That means there is a vast difference. 
+
+
+```{r fig.show="hold", out.width="50%"}
+
+NYPD$PERP_SEX[NYPD$PERP_SEX=="UNKNOWN"] = "U"
+
+knitr::kable(freq(NYPD$PERP_SEX,na.rm = T), "pipe")
+knitr::kable(freq(NYPD$VIC_SEX,na.rm = T), "pipe")
+
+
+
+```
+
+#### At last, we come toward the SexSex of perpetrators and victims. We see that Men are involved in shooting, and Men are the most victims in the shooting. However, we see that there are 1% of women (females) involved in the shooting. Unfortunate, the data is flawed. As we can see, 40% of the records for perpetrators are unknown. This record makes the data incomplete. We will have to exclude these rows when building models over this variable.
+
+
+```{r}
+
+
+CT_PERP_RACE_SFlag <- round(prop.table(table(NYPD$PERP_RACE, NYPD$STATISTICAL_MURDER_FLAG))*100, 2)
+
+colnames(CT_PERP_RACE_SFlag) <- c("% of Victim's alive ","% of Victim's death")
+kable(CT_PERP_RACE_SFlag, caption = "Perpertrator's race versus murder attempted") %>% kableExtra::kable_styling(.,position = "float_left")
+
+
+```
+
+
+```{r}
+
+subset_black_perp<- NYPD %>% filter(NYPD$PERP_RACE == "BLACK")
+
+tab1(subset_black_perp$VIC_RACE, cex.main=0.8, cex.name=0.8, cex.axis=0.8, cex.lab=0.8, sort.group ="decreasing", bar.values ="percent", main = "Percentage of shootouts done by Black race across victim's race", xlab=" % of shoot out attempts by Black", ylab="Race of Victims") %>% knitr::kable(., "pipe")
+
+
+```
+
+#### As we can notice, the highest percentage of victims were killed by the Black Race, followed by White Hispanics. We see that Black perpetrators have killed the highest victims belonging to the Black Race itself on further analysis. Furthermore, second, the highest Race of victims targeted by black perpetrators is white Hispanic.
+
+
+
