@@ -124,3 +124,43 @@ installAllPackages(packages)
 #     
 ```
 
+
+## Business Questions
+1.	Is there a relationship between the Race of the victim and the Perpetrator who died in the shooting incident? *by Chaya Kotturesh*
+
+2.	Is there any noticeable relationship between the Perpetrator's Race to the victim's sex and age with a motive to recognize the Perpetrator's race pattern? *by Neil Mascarenhas*
+
+3.	Recognize the pattern/relationship between the victim's age and the Location, specifically Bar/Night Club, to recognize the trend throughout the years and increase the patrolling.  *by Aswin Kumar Rajendran*
+
+
+```{=html}
+<hr><p id="MainPoint"> Analysis and Interpretations </p><hr>
+```
+
+
+```{r}
+
+NYPD = data.frame(read_csv("Data\\NYPD_Shooting_Incident_Data__Historic_.csv", skip_empty_rows = TRUE), stringsAsFactors = T)
+
+
+### Removing unwanted variables/ columns
+### 
+
+NYPD <- NYPD %>%
+    select(-INCIDENT_KEY, -X_COORD_CD, -Y_COORD_CD, -Latitude, -Longitude, -Lon_Lat)
+
+
+NYPD[duplicated(NYPD$INCIDENT_KEY),]
+
+
+
+Datatypelist<-as.data.frame(skimr::skim(NYPD)[[1]],skimr::skim(NYPD)[[2]])
+
+knitr::kable(Datatypelist, "pipe", col.names = "Data Type")
+
+#$`skimr::skim(NYPD)[[1]]`=="character"
+
+```
+
+
+
