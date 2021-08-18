@@ -40,10 +40,14 @@
 
 
 
+### Our Paper Presentation Slides
 
-
-
-
+||||
+|-|-|-|
+| ![Slide 1](Images/Project%20Presentation/Slide1.png?raw=true "Slide 1")|![Slide 2](Images/Project%20Presentation/Slide2.png?raw=true "Slide 2")|![Slide 3](Images/Project%20Presentation/Slide3.png?raw=true "Slide 3")|
+| ![Slide 4](Images/Project%20Presentation/Slide4.png?raw=true "Slide 4")|![Slide 5](Images/Project%20Presentation/Slide4.png?raw=true "Slide 5")|![Slide 6](Images/Project%20Presentation/Slide6.png?raw=true "Slide 6")|
+| ![Slide 7](Images/Project%20Presentation/Slide7.png?raw=true "Slide 7")|![Slide 8](Images/Project%20Presentation/Slide8.png?raw=true "Slide 8")|![Slide 9](Images/Project%20Presentation/Slide9.png?raw=true "Slide 9")|
+| ![Slide 10](Images/Project%20Presentation/Slide10.png?raw=true "Slide 10")|![Slide 11](Images/Project%20Presentation/Slide11.png?raw=true "Slide 11")|![Slide 12](Images/Project%20Presentation/Slide12.png?raw=true "Slide 12")|
 
 
 <!-- ROADMAP -->
@@ -85,6 +89,8 @@ Distributed under the GPL v3 License. See **[LICENSE](https://github.com/mascare
 Project Link: [https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/](https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/)
 
 
+  
+</details>
 
 
 
