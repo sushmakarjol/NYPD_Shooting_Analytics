@@ -30,7 +30,7 @@
     <a href="https://github.com/mascarenhasneil/NYPD_Shooting_Analytics/blob/main/Readme.md"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/mascarenhasneil/NYPD_Shooting_Analytics">View Demo</a>
+    <a href="https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/">View Paper Online</a>
     ·
     <a href="https://github.com/mascarenhasneil/NYPD_Shooting_Analytics/issues">Report Bug</a>
     ·
@@ -82,7 +82,7 @@ Distributed under the GPL v3 License. See **[LICENSE](https://github.com/mascare
 1. Neil Mascarenhas - [About me?](https://about.me/neilmascarenhas)
 
 
-Project Link: [https://github.com/mascarenhasneil/NYPD_Shooting_Analytics](https://github.com/mascarenhasneil/NYPD_Shooting_Analytics)
+Project Link: [https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/](https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/)
 
 
 
