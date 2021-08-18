@@ -28,7 +28,7 @@ header {
     /* background-position: center; */
     text-align: center;
     /*background-image: url(bg.jpg);*/
-    background-image: url("../Images/NYPD.jpg");
+    background-image: url("images/NYPD.jpg");
     background-size: inherit;
     height: 500px;}
 body {
