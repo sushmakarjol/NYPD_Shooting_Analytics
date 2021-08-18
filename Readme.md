@@ -44,16 +44,16 @@
 
 ||||
 |-|-|-|
-| ![Slide 1](Images/Project%20Presentation/Slide1.png?raw=true "Slide 1")|![Slide 2](Images/Project%20Presentation/Slide2.png?raw=true "Slide 2")|![Slide 3](Images/Project%20Presentation/Slide3.png?raw=true "Slide 3")|
-| ![Slide 4](Images/Project%20Presentation/Slide4.png?raw=true "Slide 4")|![Slide 5](Images/Project%20Presentation/Slide4.png?raw=true "Slide 5")|![Slide 6](Images/Project%20Presentation/Slide6.png?raw=true "Slide 6")|
-| ![Slide 7](Images/Project%20Presentation/Slide7.png?raw=true "Slide 7")|![Slide 8](Images/Project%20Presentation/Slide8.png?raw=true "Slide 8")|![Slide 9](Images/Project%20Presentation/Slide9.png?raw=true "Slide 9")|
-| ![Slide 10](Images/Project%20Presentation/Slide10.png?raw=true "Slide 10")|![Slide 11](Images/Project%20Presentation/Slide11.png?raw=true "Slide 11")|![Slide 12](Images/Project%20Presentation/Slide12.png?raw=true "Slide 12")|
+| ![Slide 1](Images/Project%20Presentation/Slide1.PNG?raw=true "Slide 1")|![Slide 2](Images/Project%20Presentation/Slide2.PNG?raw=true "Slide 2")|![Slide 3](Images/Project%20Presentation/Slide3.PNG?raw=true "Slide 3")|
+| ![Slide 4](Images/Project%20Presentation/Slide4.PNG?raw=true "Slide 4")|![Slide 5](Images/Project%20Presentation/Slide4.PNG?raw=true "Slide 5")|![Slide 6](Images/Project%20Presentation/Slide6.PNG?raw=true "Slide 6")|
+| ![Slide 7](Images/Project%20Presentation/Slide7.PNG?raw=true "Slide 7")|![Slide 8](Images/Project%20Presentation/Slide8.PNG?raw=true "Slide 8")|![Slide 9](Images/Project%20Presentation/Slide9.PNG?raw=true "Slide 9")|
+| ![Slide 10](Images/Project%20Presentation/Slide10.PNG?raw=true "Slide 10")|![Slide 11](Images/Project%20Presentation/Slide11.PNG?raw=true "Slide 11")|![Slide 12](Images/Project%20Presentation/Slide12.PNG?raw=true "Slide 12")|
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/mascarenhasneil/NYPD_Shooting_Analytics/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/mascarenhasneil/NYPD_Shooting_Analytics/issues) for a list of proposed features (and known issues)
 
 
 
@@ -88,6 +88,20 @@ Distributed under the GPL v3 License. See **[LICENSE](https://github.com/mascare
 
 Project Link: [https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/](https://mascarenhasneil.github.io/NYPD_Shooting_Analytics/)
 
+
+## References
+<details>
+  <summary>Click to expand!</summary>
+  
+  
+  1. *Chapter 11 Categorical Predictors and Interactions | Applied Statistics with R.* (2020, October 30). NA. https://daviddalpiaz.github.io/appliedstats/categorical-predictors-and-interactions.html
+  1. *Coding for Categorical Variables in Regression Models | R Learning Modules.* (n.d.). NA. Retrieved May 16, 2021, from https://stats.idre.ucla.edu/r/modules/coding-for-categorical-variables-in-regression-models/
+  1. GeeksforGeeks. (2020, October 12). *Regression with Categorical Variables in R Programming.* https://www.geeksforgeeks.org/regression-with-categorical-variables-in-r-programming/
+  1. *Logit Regression | R Data Analysis Examples.* (n.d.). Idre UCLA. Retrieved May 10, 2021, from https://stats.idre.ucla.edu/r/dae/logit-regression/
+  1. *Quick-R: Generalized Linear Models.* (n.d.). Statmethods. Retrieved May 16, 2021, from https://www.statmethods.net/advstats/glm.html
+  1. Rungta, K. (2021, April 8). *R Random Forest Tutorial with Example.* Rungta Blog. https://www.guru99.com/r-random-forest-tutorial.html
+  1. The City of New York. (2020, July 15). *NYPD Shooting Incident Data (Historic) | NYC Open Data. NYC Open Data.* https://data.cityofnewyork.us/Public-Safety/NYPD-Shooting-Incident-Data-Historic-/833y-fsy8
+  1. Winston, A., & Winston, A. (2018, January 27). *Transparency Advocates Win Release of NYPD “Predictive Policing” Documents.* The Intercept. https://theintercept.com/2018/01/27/nypd-predictive-policing-documents-lawsuit-crime-forecasting-brennan/
 
   
 </details>
