@@ -15,7 +15,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
-## Project
+## Machine Learning Project and Analytics
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
