@@ -15,7 +15,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
-## Machine Learning Project and Analytics
+## Machine Learning Project and Analytics by Sushma
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
